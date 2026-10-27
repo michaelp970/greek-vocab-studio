@@ -1,211 +1,125 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Greek Vocab Studio</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f4f6fb;
-      color: #18233a;
-    }
-    button, select, textarea, input {
-      font: inherit;
-      padding: 10px;
-      margin: 5px 0;
-    }
-    button { cursor: pointer; }
-    .card {
-      background: white;
-      padding: 24px;
-      border-radius: 16px;
-      margin: 16px 0;
-    }
-    .answers {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greek Vocab Studio</title>
+<style>
+:root {
+  --site-primary: #315cce;
+  --site-on-primary: #ffffff;
+  --site-secondary: #e7edff;
+  --site-on-secondary: #203b86;
+  --site-background: #f4f6fb;
+  --site-on-background: #18233a;
+  --site-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-font-heading: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --site-heading-scale: 1;
+  --site-spacing-scale: 1;
+  --site-radius-scale: 1;
+  --site-decoration-opacity: 1;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: light-dark(#f4f6fb, #101521); color: light-dark(#18233a, #edf1fb); font-family: var(--site-font-body); }
+#app { min-height: 100vh; width: 100%; border-radius: 0; background-color: var(--site-background); color: var(--site-on-background); padding: calc(26px * var(--site-spacing-scale)); }
+.shell { max-width: 1050px; margin: 0 auto; }
+.topbar { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:30px; }
+.brand { display:flex; align-items:center; gap:12px; font-weight:850; letter-spacing:-.04em; font-size:1.15rem; }
+.mark { width:42px; height:42px; border-radius:14px; display:grid; place-items:center; color:var(--site-on-primary); background:var(--site-primary); font-size:1.35rem; box-shadow:0 6px 16px #315cce33; }
+.pill { background:var(--site-secondary); color:var(--site-on-secondary); padding:8px 12px; border-radius:999px; font-size:.8rem; font-weight:750; }
+.hero { display:grid; grid-template-columns:1.4fr .8fr; gap:18px; margin-bottom:22px; }
+.panel { background:light-dark(#fff,#1a2232); color:light-dark(#18233a,#edf1fb); border:1px solid light-dark(#e2e7f1,#30394c); border-radius:calc(24px * var(--site-radius-scale)); padding:calc(25px * var(--site-spacing-scale)); box-shadow:0 10px 30px #172b4d08; }
+.hero-main { background:var(--site-primary); color:var(--site-on-primary); position:relative; overflow:hidden; min-height:230px; }
+.hero-main:after { content:"αβγ"; position:absolute; right:20px; bottom:-35px; font-weight:900; font-size:8rem; opacity:calc(.12 * var(--site-decoration-opacity)); transform:rotate(-9deg); pointer-events:none; }
+.eyebrow { font-size:.76rem; text-transform:uppercase; letter-spacing:.12em; font-weight:800; opacity:.8; }
+h1 { font-family:var(--site-font-heading); font-size:calc(2.3rem * var(--site-heading-scale)); line-height:1.05; letter-spacing:-.055em; margin:12px 0; max-width:550px; }
+.hero p { max-width:500px; line-height:1.55; opacity:.9; margin:0; }
+.stats { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:20px; }
+.stat { border-radius:16px; padding:16px; background:light-dark(#f5f7fc,#222c40); }
+.stat strong { display:block; font-size:1.6rem; letter-spacing:-.04em; }
+.stat span { font-size:.8rem; opacity:.72; }
+.tabs { display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 16px; }
+.tab, button { border:0; font:inherit; cursor:pointer; transition:transform .12s, background .15s; }
+.tab { background:transparent; color:inherit; padding:11px 15px; border-radius:12px; font-weight:750; }
+.tab.active { background:var(--site-secondary); color:var(--site-on-secondary); }
+button:hover { transform:translateY(-1px); }
+button:focus-visible, textarea:focus-visible, input:focus-visible { outline:3px solid #8aa6ff; outline-offset:2px; }
+.primary { background:var(--site-primary); color:var(--site-on-primary); padding:13px 18px; border-radius:13px; font-weight:800; }
+.secondary { background:light-dark(#edf1f8,#2b3548); color:light-dark(#263550,#f0f3fc); padding:12px 16px; border-radius:13px; font-weight:750; }
+.danger { background:#fff0ee; color:#a83328; padding:12px 16px; border-radius:13px; font-weight:750; }
+.content { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr); gap:18px; align-items:start; }
+.section-title { font-size:1.15rem; letter-spacing:-.025em; margin:0 0 6px; }
+.muted { opacity:.68; font-size:.9rem; line-height:1.5; }
+label { display:block; font-size:.86rem; font-weight:750; margin:15px 0 7px; }
+textarea, input[type=text] { width:100%; border:1px solid light-dark(#d9e0ec,#3b465b); border-radius:13px; padding:13px; font:inherit; background:light-dark(#fbfcff,#151d2b); color:inherit; }
+textarea { min-height:170px; resize:vertical; line-height:1.5; }
+.file-drop { display:block; padding:17px; border:1.5px dashed light-dark(#b8c6e2,#4b5a75); border-radius:15px; background:light-dark(#f8faff,#202a3d); }
+.file-drop input { display:block; margin-top:10px; max-width:100%; }
+.actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:14px; }
+.word-list { margin-top:15px; display:flex; flex-direction:column; gap:8px; }
+.word-row { display:flex; justify-content:space-between; gap:12px; padding:12px 13px; border:1px solid light-dark(#e4e9f2,#333d51); border-radius:13px; }
+.word-row strong { display:block; }
+.word-row span { font-size:.88rem; opacity:.7; }
+.small-button { background:transparent; color:inherit; opacity:.65; padding:4px 7px; border-radius:8px; }
+.quiz-card { text-align:center; min-height:300px; display:flex; flex-direction:column; justify-content:center; }
+.quiz-type { display:inline-flex; align-self:center; border-radius:999px; background:var(--site-secondary); color:var(--site-on-secondary); padding:7px 11px; font-size:.78rem; font-weight:800; }
+.prompt { font-size:clamp(2rem,5vw,3rem); font-weight:850; letter-spacing:-.05em; margin:24px 0 8px; overflow-wrap:anywhere; }
+.subprompt { opacity:.65; margin-bottom:20px; }
+.answer-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+.answer { background:light-dark(#f3f6fc,#263147); color:inherit; border:1px solid light-dark(#e0e7f2,#3b4860); border-radius:14px; padding:15px 12px; font-weight:750; min-height:60px; }
+.answer.correct { background:#e0f7e9; color:#146c3a; border-color:#80d7a4; }
+.answer.wrong { background:#ffebe8; color:#a83227; border-color:#ffb5aa; }
+.feedback { margin-top:15px; font-weight:750; min-height:24px; }
+.quiz-footer { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:20px; }
+.progress { height:7px; background:light-dark(#e7ebf3,#30394b); border-radius:99px; overflow:hidden; margin:15px 0; }
+.progress > div { height:100%; background:var(--site-primary); width:0; transition:width .2s; }
+.hidden { display:none !important; }
+.notice { padding:12px 14px; border-radius:13px; background:light-dark(#fff7df,#3b321d); color:light-dark(#785613,#ffe9a7); font-size:.85rem; line-height:1.5; margin-top:12px; }
+footer { text-align:center; opacity:.58; font-size:.78rem; padding:28px 0 8px; }
+@media(max-width:760px) { #app { padding:16px; } .hero,.content { grid-template-columns:1fr; } .hero-main { min-height:210px; } .topbar { margin-bottom:20px; } h1 { font-size:2rem; } .panel { padding:19px; } }
+@media(max-width:420px) { .answer-grid { grid-template-columns:1fr; } .pill { display:none; } }
+</style>
 </head>
 <body>
-  <h1>🇬🇷 Greek Vocab Studio</h1>
-  <p>Learn Greek vocabulary with quizzes that repeat your mistakes.</p>
-
-  <div class="card">
-    <h2>Quiz settings</h2>
-    <label for="direction">Direction:</label>
-    <select id="direction">
-      <option value="mix">Mixed Greek and English</option>
-      <option value="greek">Greek → English</option>
-      <option value="english">English → Greek</option>
-    </select>
-    <button onclick="startQuiz()">Start quiz</button>
-  </div>
-
-  <div class="card">
-    <p id="progress">Ready to practise</p>
-    <h2 id="question">Press Start quiz</h2>
-    <div class="answers" id="answers"></div>
-    <p id="feedback"></p>
-    <button id="next" onclick="nextQuestion()" hidden>Next question</button>
-  </div>
-
-  <div class="card">
-    <h2>Add vocabulary</h2>
-    <p>Enter one pair per line, Greek first, separated by a dash.</p>
-    <textarea id="vocabulary" rows="6" style="width:95%"
-      placeholder="το σπίτι — the house&#10;η πόλη — the city"></textarea>
-    <br>
-    <button onclick="importWords()">Import words</button>
-    <p id="importStatus"></p>
-  </div>
-
-  <script>
-    const starterWords = [
-      { gr: "το σπίτι", en: "the house" },
-      { gr: "η οικογένεια", en: "the family" },
-      { gr: "το σχολείο", en: "the school" },
-      { gr: "ο φίλος", en: "the friend" },
-      { gr: "η πόλη", en: "the city" },
-      { gr: "το δωμάτιο", en: "the room" },
-      { gr: "η μητέρα", en: "the mother" },
-      { gr: "ο πατέρας", en: "the father" }
-    ];
-
-    let words = [...starterWords];
-    let queue = [];
-    let missed = [];
-    let index = 0;
-    let current = null;
-    let locked = false;
-    let reviewRound = false;
-
-    function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
-    }
-
-    function startQuiz() {
-      if (words.length < 2) {
-        alert("Add at least two vocabulary pairs first.");
-        return;
-      }
-
-      queue = shuffle([...words]);
-      missed = [];
-      index = 0;
-      reviewRound = false;
-      showQuestion();
-    }
-
-    function showQuestion() {
-      locked = false;
-
-      if (index >= queue.length) {
-        if (missed.length > 0) {
-          queue = [...missed];
-          missed = [];
-          index = 0;
-          reviewRound = true;
-        } else {
-          document.getElementById("question").textContent =
-            "Μπράβο! Quiz complete!";
-          document.getElementById("answers").innerHTML = "";
-          document.getElementById("feedback").textContent =
-            "You answered every question correctly.";
-          document.getElementById("next").hidden = true;
-          return;
-        }
-      }
-
-      current = queue[index];
-
-      const direction = document.getElementById("direction").value;
-      const greekFirst = direction === "greek" ? true
-        : direction === "english" ? false
-        : Math.random() < 0.5;
-
-      const prompt = greekFirst ? current.gr : current.en;
-      const correct = greekFirst ? current.en : current.gr;
-
-      document.getElementById("progress").textContent =
-        `${reviewRound ? "Review round — " : ""}Question ${index + 1} of ${queue.length}`;
-
-      document.getElementById("question").textContent = prompt;
-      document.getElementById("feedback").textContent = "";
-      document.getElementById("next").hidden = true;
-
-      const wrongOptions = shuffle(
-        words.filter(word => word !== current)
-      ).slice(0, 3).map(word => greekFirst ? word.en : word.gr);
-
-      const options = shuffle([correct, ...wrongOptions]);
-      const container = document.getElementById("answers");
-      container.innerHTML = "";
-
-      options.forEach(option => {
-        const button = document.createElement("button");
-        button.textContent = option;
-        button.onclick = () => checkAnswer(option, correct);
-        container.appendChild(button);
-      });
-    }
-
-    function checkAnswer(answer, correct) {
-      if (locked) return;
-      locked = true;
-
-      if (answer === correct) {
-        document.getElementById("feedback").textContent = "Correct! ✓";
-      } else {
-        document.getElementById("feedback").textContent =
-          `Incorrect. The answer is: ${correct}`;
-
-        if (!missed.includes(current)) {
-          missed.push(current);
-        }
-      }
-
-      document.getElementById("next").hidden = false;
-    }
-
-    function nextQuestion() {
-      index++;
-      showQuestion();
-    }
-
-    function importWords() {
-      const text = document.getElementById("vocabulary").value;
-      const lines = text.split(/\r?\n/);
-      let added = 0;
-
-      lines.forEach(line => {
-        const parts = line.split(/\s+[—–-]\s+/);
-        if (parts.length < 2) return;
-
-        const gr = parts[0].trim();
-        const en = parts.slice(1).join(" - ").trim();
-
-        if (!gr || !en) return;
-
-        const exists = words.some(word =>
-          word.gr.toLowerCase() === gr.toLowerCase() &&
-          word.en.toLowerCase() === en.toLowerCase()
-        );
-
-        if (!exists) {
-          words.push({ gr, en });
-          added++;
-        }
-      });
-
-      document.getElementById("importStatus").textContent =
-        `Imported ${added} new word pairs.`;
-    }
-  </script>
+<div id="app"><div class="shell">
+<header class="topbar"><div class="brand"><div class="mark">α</div><span>Greek Vocab Studio</span></div><div class="pill">LEARN · PRACTISE · REMEMBER</div></header>
+<section class="hero"><div class="panel hero-main"><div class="eyebrow">Your personal Greek practice</div><h1>Small quizzes.<br>Stronger memory.</h1><p>Build quizzes from your class vocabulary, practise both directions, and revisit every word you miss before you finish.</p></div><div class="panel"><div class="eyebrow">Your progress</div><div class="stats"><div class="stat"><strong id="wordCount">8</strong><span>words in your set</span></div><div class="stat"><strong id="masteredCount">0</strong><span>correct this session</span></div><div class="stat"><strong id="dueCount">0</strong><span>missed to review</span></div><div class="stat"><strong id="streakCount">0</strong><span>current streak</span></div></div></div></section>
+<nav class="tabs"><button class="tab active" data-view="quiz">Quiz</button><button class="tab" data-view="library">Vocabulary library</button><button class="tab" data-view="import">Import PDF / words</button></nav>
+<section id="quizView"><div class="content"><div class="panel quiz-card" id="quizPanel"><div class="quiz-type" id="quizType">GREEK → ENGLISH</div><div class="prompt" id="prompt">το σπίτι</div><div class="subprompt" id="subprompt">Choose the correct meaning</div><div class="answer-grid" id="answerGrid"></div><div class="feedback" id="feedback" aria-live="polite"></div><div class="progress"><div id="progressBar"></div></div><div class="quiz-footer"><span class="muted" id="questionCount">Question 1 of 8</span><button id="nextBtn" class="primary hidden">Next question →</button></div></div><div class="panel"><h2 class="section-title">Quiz settings</h2><p class="muted">Mix up the direction so you learn to recognise and recall each word.</p><label for="direction">Question direction</label><select id="direction" style="width:100%;padding:12px;border:1px solid #d9e0ec;border-radius:12px;background:transparent;color:inherit;font:inherit"><option value="mix">Mixed (Greek ↔ English)</option><option value="greek">Greek → English</option><option value="english">English → Greek</option></select><label for="quizSize">Quiz length</label><select id="quizSize" style="width:100%;padding:12px;border:1px solid #d9e0ec;border-radius:12px;background:transparent;color:inherit;font:inherit"><option value="all">All words</option><option value="5">5 questions</option><option value="10">10 questions</option><option value="15">15 questions</option></select><div class="actions"><button class="primary" id="restartBtn">Start new quiz</button></div><div class="notice">Missed a question? It goes into a review round at the end. If you miss it again, it returns until you get it right.</div></div></div></section>
+<section id="libraryView" class="hidden"><div class="content"><div class="panel"><h2 class="section-title">Your vocabulary</h2><p class="muted">Your current words, ready to practise.</p><div id="wordList" class="word-list"></div></div><div class="panel"><h2 class="section-title">Study tip</h2><p class="muted">Try to say the Greek word out loud before revealing the meaning. Switch to English → Greek when you want a tougher recall test.</p><button class="primary" id="libraryQuizBtn">Practise these words</button></div></div></section>
+<section id="importView" class="hidden"><div class="content"><div class="panel"><h2 class="section-title">Add vocabulary from your PDF</h2><p class="muted">Upload your PDF directly, or choose a text/CSV file. PDF text will be extracted into the box below so you can check it before importing.</p><label class="file-drop">Choose a PDF, text or CSV file<input type="file" id="fileInput" accept=".pdf,.txt,.csv,application/pdf,text/plain,text/csv"></label><label for="vocabInput">Extracted or pasted vocabulary</label><textarea id="vocabInput" placeholder="το σπίτι — the house&#10;η οικογένεια — the family&#10;το σχολείο — the school"></textarea><div class="actions"><button class="primary" id="importBtn">Import vocabulary</button><button class="secondary" id="sampleBtn">Load sample set</button><button class="danger" id="clearBtn">Clear all words</button></div><div id="importStatus" class="feedback" aria-live="polite"></div><div class="notice"><strong>PDF tip:</strong> text-based PDFs can be read directly. If your PDF is a scanned image, text extraction may not work; upload it here in ChatGPT and I can extract the vocabulary for you.</div></div><div class="panel"><h2 class="section-title">Accepted formats</h2><p class="muted">Examples the importer understands:</p><div class="word-row"><div><strong>το σπίτι — the house</strong><span>Greek, then English</span></div></div><div class="word-row"><div><strong>η πόλη | the city</strong><span>Pipe separator</span></div></div><div class="word-row"><div><strong>το σχολείο, the school</strong><span>Comma separator</span></div></div><p class="muted">It skips blank lines and duplicate pairs. You can keep adding more vocabulary whenever you get a new class PDF.</p></div></div></section>
+<footer>Greek Vocab Studio · Your words stay in this browser on this device.</footer>
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+const sampleWords = [
+ {gr:'το σπίτι',en:'the house'}, {gr:'η οικογένεια',en:'the family'}, {gr:'το σχολείο',en:'the school'}, {gr:'ο φίλος',en:'the friend'},
+ {gr:'η πόλη',en:'the city'}, {gr:'το δωμάτιο',en:'the room'}, {gr:'η μητέρα',en:'the mother'}, {gr:'ο πατέρας',en:'the father'}
+];
+let words = sampleWords.slice();
+try { const saved = localStorage.getItem('greekVocabWords'); if(saved) words = JSON.parse(saved); } catch(e) {}
+let queue=[], index=0, missed=[], sessionCorrect=0, streak=0, answered=false, current=null, reviewPhase=false;
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem('greekVocabWords',JSON.stringify(words));}catch(e){}}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function updateStats(){ $('wordCount').textContent=words.length; $('masteredCount').textContent=sessionCorrect; $('dueCount').textContent=missed.length; $('streakCount').textContent=streak; }
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function setView(view){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));['quiz','library','import'].forEach(v=>$(v+'View').classList.toggle('hidden',v!==view));if(view==='library')renderLibrary();}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+function startQuiz(){ if(words.length<2){setView('import');$('importStatus').textContent='Add at least two vocabulary pairs to start a quiz.';return;} let n=$('quizSize').value==='all'?words.length:Number($('quizSize').value); queue=shuffle(words.slice()).slice(0,Math.min(n,words.length)); index=0; missed=[];sessionCorrect=0;streak=0;reviewPhase=false;renderQuestion();updateStats(); }
+function renderQuestion(){answered=false;$('feedback').textContent='';$('nextBtn').classList.add('hidden');$('answerGrid').innerHTML=''; if(index>=queue.length){ if(missed.length){queue=missed.splice(0);index=0;reviewPhase=true;updateStats();renderQuestion();return;} finishQuiz();return;} current=queue[index];const dir=$('direction').value;const greekFirst=dir==='greek'?true:dir==='english'?false:Math.random()<.5;current.greekFirst=greekFirst;$('quizType').textContent=(reviewPhase?'REVIEW ROUND · ':'')+(greekFirst?'GREEK → ENGLISH':'ENGLISH → GREEK');$('prompt').textContent=greekFirst?current.gr:current.en;$('subprompt').textContent=greekFirst?'Choose the correct meaning':'Choose the matching Greek word';$('questionCount').textContent=`Question ${index+1} of ${queue.length}`;$('progressBar').style.width=`${index/Math.max(queue.length,1)*100}%`;
+ const correct=greekFirst?current.en:current.gr;let options=[correct];const pool=words.filter(w=>w!==current);shuffle(pool).slice(0,Math.min(3,pool.length)).forEach(w=>options.push(greekFirst?w.en:w.gr));shuffle(options).forEach(opt=>{const b=document.createElement('button');b.className='answer';b.textContent=opt;b.addEventListener('click',()=>chooseAnswer(b,opt,correct));$('answerGrid').appendChild(b);}); }
+function chooseAnswer(btn,opt,correct){if(answered)return;answered=true;const ok=opt===correct;document.querySelectorAll('.answer').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('correct');});if(ok){sessionCorrect++;streak++;$('feedback').textContent='Correct! Nice work.';}else{btn.classList.add('wrong');streak=0;$('feedback').textContent=`Not quite — the answer is “${correct}”. You'll see this word again at the end.`;if(!missed.some(w=>w.gr===current.gr&&w.en===current.en))missed.push(current);}updateStats();$('nextBtn').classList.remove('hidden');$('nextBtn').textContent=index===queue.length-1?(missed.length?'Go to review →':'Finish quiz ✓'):'Next question →';}
+function finishQuiz(){$('quizType').textContent='QUIZ COMPLETE';$('prompt').textContent='Μπράβο!';$('subprompt').textContent=`You got ${sessionCorrect} correct in the main round.`;$('answerGrid').innerHTML='';$('feedback').textContent=reviewPhase?'Review round complete — all missed words answered correctly.':'Great session. Start another quiz to keep practising.';$('questionCount').textContent=`${sessionCorrect} correct · ${missed.length} still to review`;$('progressBar').style.width='100%';$('nextBtn').classList.remove('hidden');$('nextBtn').textContent='Start another quiz';$('nextBtn').onclick=()=>{ $('nextBtn').onclick=advance;startQuiz();};updateStats();}
+function advance(){index++;renderQuestion();}
+$('nextBtn').onclick=advance;$('restartBtn').addEventListener('click',startQuiz);$('libraryQuizBtn').addEventListener('click',()=>{setView('quiz');startQuiz();});$('direction').addEventListener('change',()=>{});
+function renderLibrary(){ $('wordList').innerHTML=''; if(!words.length){$('wordList').innerHTML='<p class="muted">No vocabulary yet. Add some in Import PDF / words.</p>';return;}words.forEach((w,i)=>{const row=document.createElement('div');row.className='word-row';row.innerHTML=`<div><strong>${escapeHtml(w.gr)}</strong><span>${escapeHtml(w.en)}</span></div><button class="small-button" aria-label="Remove ${escapeHtml(w.gr)}" title="Remove word">✕</button>`;row.querySelector('button').addEventListener('click',()=>{words.splice(i,1);save();updateStats();renderLibrary();});$('wordList').appendChild(row);});}
+function parsePairs(text){const result=[];text.split(/\r?\n/).forEach(line=>{let s=line.trim();if(!s)return;s=s.replace(/^[-*•\d.)\s]+/,'').trim();let parts=s.split(/\s+[—–-]\s+|\s*\|\s*|\s*;\s*|\s*,\s*|\t+|\s{2,}/);if(parts.length<2)return;let gr=parts.shift().trim(),en=parts.join(' ').trim();if(!gr||!en||/^(greek|ελληνικά|vocabulary|english|translation)$/i.test(gr))return;result.push({gr,en});});return result;}
+$('importBtn').addEventListener('click',()=>{const pairs=parsePairs($('vocabInput').value);let added=0;pairs.forEach(p=>{if(!words.some(w=>w.gr.toLowerCase()===p.gr.toLowerCase()&&w.en.toLowerCase()===p.en.toLowerCase())){words.push(p);added++;}});save();updateStats();renderLibrary();$('importStatus').textContent=added?`Imported ${added} new word pair${added===1?'':'s'}. Ready to quiz!`:'No new pairs found. Check that each line has Greek and English separated by a dash, pipe, semicolon or comma.';});
+$('sampleBtn').addEventListener('click',()=>{words=sampleWords.slice();save();updateStats();renderLibrary();$('vocabInput').value='';$('importStatus').textContent='Sample vocabulary loaded.';});
+$('clearBtn').addEventListener('click',()=>{if(confirm('Clear all vocabulary from this browser?')){words=[];save();updateStats();renderLibrary();$('importStatus').textContent='Vocabulary cleared.';}});
+$('fileInput').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{if(f.type==='application/pdf'||f.name.toLowerCase().endsWith('.pdf')){if(!window.pdfjsLib)throw new Error('PDF reader could not load. Check your internet connection and reload the page.');pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';$('importStatus').textContent='Reading PDF text…';const data=new Uint8Array(await f.arrayBuffer());const pdf=await pdfjsLib.getDocument({data}).promise;const pages=[];for(let p=1;p<=pdf.numPages;p++){const page=await pdf.getPage(p);const content=await page.getTextContent();const rows=[];content.items.forEach(item=>{if(!item.str||!item.str.trim())return;const y=Math.round(item.transform[5]);let row=rows.find(r=>Math.abs(r.y-y)<=3);if(!row){row={y,items:[]};rows.push(row);}row.items.push({x:item.transform[4],text:item.str.trim()});});rows.sort((a,b)=>b.y-a.y);rows.forEach(row=>{row.items.sort((a,b)=>a.x-b.x);pages.push(row.items.map(i=>i.text).join('    '));});} $('vocabInput').value=pages.join('\n');$('importStatus').textContent=`Extracted text from ${f.name} (${pdf.numPages} page${pdf.numPages===1?'':'s'}). Check the text, then click Import vocabulary.`;}else{$('vocabInput').value=await f.text();$('importStatus').textContent=`Loaded ${f.name}. Check the text, then click Import vocabulary.`;}}catch(err){$('importStatus').textContent=err.message||'Could not read that file. Try a text-based PDF, plain text or CSV file.';}});
+updateStats();startQuiz();
+</script>
 </body>
 </html>
