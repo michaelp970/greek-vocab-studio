@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Greek Vocab Studio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f4f6fb;
+      color: #18233a;
+    }
+    button, select, textarea, input {
+      font: inherit;
+      padding: 10px;
+      margin: 5px 0;
+    }
+    button { cursor: pointer; }
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 16px;
+      margin: 16px 0;
+    }
+    .answers {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🇬🇷 Greek Vocab Studio</h1>
+  <p>Learn Greek vocabulary with quizzes that repeat your mistakes.</p>
+
+  <div class="card">
+    <h2>Quiz settings</h2>
+    <label for="direction">Direction:</label>
+    <select id="direction">
+      <option value="mix">Mixed Greek and English</option>
+      <option value="greek">Greek → English</option>
+      <option value="english">English → Greek</option>
+    </select>
+    <button onclick="startQuiz()">Start quiz</button>
+  </div>
+
+  <div class="card">
+    <p id="progress">Ready to practise</p>
+    <h2 id="question">Press Start quiz</h2>
+    <div class="answers" id="answers"></div>
+    <p id="feedback"></p>
+    <button id="next" onclick="nextQuestion()" hidden>Next question</button>
+  </div>
+
+  <div class="card">
+    <h2>Add vocabulary</h2>
+    <p>Enter one pair per line, Greek first, separated by a dash.</p>
+    <textarea id="vocabulary" rows="6" style="width:95%"
+      placeholder="το σπίτι — the house&#10;η πόλη — the city"></textarea>
+    <br>
+    <button onclick="importWords()">Import words</button>
+    <p id="importStatus"></p>
+  </div>
+
+  <script>
+    const starterWords = [
+      { gr: "το σπίτι", en: "the house" },
+      { gr: "η οικογένεια", en: "the family" },
+      { gr: "το σχολείο", en: "the school" },
+      { gr: "ο φίλος", en: "the friend" },
+      { gr: "η πόλη", en: "the city" },
+      { gr: "το δωμάτιο", en: "the room" },
+      { gr: "η μητέρα", en: "the mother" },
+      { gr: "ο πατέρας", en: "the father" }
+    ];
+
+    let words = [...starterWords];
+    let queue = [];
+    let missed = [];
+    let index = 0;
+    let current = null;
+    let locked = false;
+    let reviewRound = false;
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function startQuiz() {
+      if (words.length < 2) {
+        alert("Add at least two vocabulary pairs first.");
+        return;
+      }
+
+      queue = shuffle([...words]);
+      missed = [];
+      index = 0;
+      reviewRound = false;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      locked = false;
+
+      if (index >= queue.length) {
+        if (missed.length > 0) {
+          queue = [...missed];
+          missed = [];
+          index = 0;
+          reviewRound = true;
+        } else {
+          document.getElementById("question").textContent =
+            "Μπράβο! Quiz complete!";
+          document.getElementById("answers").innerHTML = "";
+          document.getElementById("feedback").textContent =
+            "You answered every question correctly.";
+          document.getElementById("next").hidden = true;
+          return;
+        }
+      }
+
+      current = queue[index];
+
+      const direction = document.getElementById("direction").value;
+      const greekFirst = direction === "greek" ? true
+        : direction === "english" ? false
+        : Math.random() < 0.5;
+
+      const prompt = greekFirst ? current.gr : current.en;
+      const correct = greekFirst ? current.en : current.gr;
+
+      document.getElementById("progress").textContent =
+        `${reviewRound ? "Review round — " : ""}Question ${index + 1} of ${queue.length}`;
+
+      document.getElementById("question").textContent = prompt;
+      document.getElementById("feedback").textContent = "";
+      document.getElementById("next").hidden = true;
+
+      const wrongOptions = shuffle(
+        words.filter(word => word !== current)
+      ).slice(0, 3).map(word => greekFirst ? word.en : word.gr);
+
+      const options = shuffle([correct, ...wrongOptions]);
+      const container = document.getElementById("answers");
+      container.innerHTML = "";
+
+      options.forEach(option => {
+        const button = document.createElement("button");
+        button.textContent = option;
+        button.onclick = () => checkAnswer(option, correct);
+        container.appendChild(button);
+      });
+    }
+
+    function checkAnswer(answer, correct) {
+      if (locked) return;
+      locked = true;
+
+      if (answer === correct) {
+        document.getElementById("feedback").textContent = "Correct! ✓";
+      } else {
+        document.getElementById("feedback").textContent =
+          `Incorrect. The answer is: ${correct}`;
+
+        if (!missed.includes(current)) {
+          missed.push(current);
+        }
+      }
+
+      document.getElementById("next").hidden = false;
+    }
+
+    function nextQuestion() {
+      index++;
+      showQuestion();
+    }
+
+    function importWords() {
+      const text = document.getElementById("vocabulary").value;
+      const lines = text.split(/\r?\n/);
+      let added = 0;
+
+      lines.forEach(line => {
+        const parts = line.split(/\s+[—–-]\s+/);
+        if (parts.length < 2) return;
+
+        const gr = parts[0].trim();
+        const en = parts.slice(1).join(" - ").trim();
+
+        if (!gr || !en) return;
+
+        const exists = words.some(word =>
+          word.gr.toLowerCase() === gr.toLowerCase() &&
+          word.en.toLowerCase() === en.toLowerCase()
+        );
+
+        if (!exists) {
+          words.push({ gr, en });
+          added++;
+        }
+      });
+
+      document.getElementById("importStatus").textContent =
+        `Imported ${added} new word pairs.`;
+    }
+  </script>
+</body>
+</html>
